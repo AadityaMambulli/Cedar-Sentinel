@@ -10,26 +10,14 @@ every file first.
 
 ## Current implementation status
 
-Everything below `policy/`, `executor/`, and `audit/` is currently
-**scaffolded with working structure but placeholder logic** — the shapes
-and function signatures are final (per `docs/interfaces.md`), but core logic
-is stubbed. Specifically:
+The core policy, execution, audit, and pipeline layers are **fully implemented and verified working**:
 
-- `policy/authorize.py` — `authorize()` currently always returns a hardcoded
-  Deny. Needs real Cedar evaluation (via the `cedar-policy` package) against
-  `policy/policies/base.cedar` and `policy/schema.json`.
-- `audit/logger.py` — `_get_client()` raises `NotImplementedError`. Needs a
-  real OpenSearch client (`opensearchpy.OpenSearch`) configured from env vars
-  (`OPENSEARCH_HOST`, `OPENSEARCH_PORT`). Currently prints to stdout as a
-  placeholder so the rest of the pipeline can be tested without OpenSearch
-  being live yet.
-- `audit/query_helpers.py` — both functions raise `NotImplementedError`,
-  waiting on the same OpenSearch client as `logger.py`.
-- `executor/sandbox_resources.py` — in-memory fake order data
-  (`_ORDERS` dict). This is intentional for the hackathon demo, not a bug —
-  don't "fix" it into a real database unless there's time to spare.
-- `agent/` and `frontend/` — owned by other teammates; do not scaffold or
-  modify without coordinating with them (see ownership table in `AGENTS.md`).
+- `policy/authorize.py` — Fully implemented with real Cedar evaluation (via the `cedar` package) evaluating `policy/policies/*.cedar` against `policy/schema.json`. Normalizes numeric context and parses entity UIDs.
+- `executor/actions.py` & `executor/sandbox_resources.py` — Action dispatcher and sandbox order data (`_ORDERS` dict) with refund accumulation and order query support. In-memory data is intentional for the hackathon demo.
+- `audit/logger.py` — Fully implemented with `get_opensearch_client()` and `log_decision()` creating UUID-tracked audit logs persisting to live Amazon OpenSearch (with graceful stdout fallback if OpenSearch is offline).
+- `audit/query_helpers.py` — Fully implemented `search_logs()` (supporting filters on agent and decision with timestamp sorting) and `get_log_by_id()` querying the OpenSearch index.
+- `pipeline.py` — End-to-end pipeline coordinator chaining `authorize()` -> conditional `execute_action()` -> `log_decision()`. Verified end-to-end against live Amazon OpenSearch cluster for both Allow and Deny paths.
+- `agent/` and `frontend/` — Owned by teammates; do not scaffold or modify without coordinating with them (see ownership table in `AGENTS.md`).
 
 ## Module responsibilities (one-liners)
 

@@ -60,7 +60,7 @@ this keeps parallel development from causing merge conflicts.
   account level (`ValidationException: Operation not allowed`, unrelated to
   IAM); working around this by using a teammate's existing AWS account for
   Bedrock calls
-- **Policy engine:** Cedar (`cedar-policy` Python package) — default-deny
+- **Policy engine:** Cedar (`cedar-python` package, imported as `cedar`) — default-deny
   posture; every allowed action needs an explicit `permit` policy in
   `policy/policies/`
 - **Audit store:** Amazon OpenSearch
