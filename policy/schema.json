@@ -1,0 +1,47 @@
+{
+  "": {
+    "entityTypes": {
+      "Agent": {
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      },
+      "Order": {
+        "shape": {
+          "type": "Record",
+          "attributes": {}
+        }
+      }
+    },
+    "actions": {
+      "IssueRefund": {
+        "appliesTo": {
+          "principalTypes": ["Agent"],
+          "resourceTypes": ["Order"],
+          "context": {
+            "type": "Record",
+            "attributes": {
+              "amount": {
+                "type": "Long"
+              },
+              "currency": {
+                "type": "String"
+              }
+            }
+          }
+        }
+      },
+      "ReadOrder": {
+        "appliesTo": {
+          "principalTypes": ["Agent"],
+          "resourceTypes": ["Order"],
+          "context": {
+            "type": "Record",
+            "attributes": {}
+          }
+        }
+      }
+    }
+  }
+}
