@@ -1,0 +1,50 @@
+# ===== Secrets & credentials (CRITICAL — never commit these) =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials
+.aws/
+
+# ===== Python =====
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.log
+
+# ===== Node / Next.js (frontend/) =====
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env*.local
+frontend/next-env.d.ts
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.turbo/
+frontend/coverage/
+
+# ===== OS / editor cruft =====
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ===== AWS / Cedar / OpenSearch local artifacts =====
+*.tfstate
+*.tfstate.backup
+.terraform/
+cedar-policies/*.local.cedar
+opensearch-data/
