@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 # Default model identifiers and endpoints
 DEFAULT_BEDROCK_MODEL_ID = os.getenv("BEDROCK_MODEL_ID", "amazon.nova-micro-v1:0")
 DEFAULT_BEDROCK_REGION = os.getenv("BEDROCK_AWS_REGION", "us-east-1")
-DEFAULT_OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:20128")
-DEFAULT_OLLAMA_MODEL_ID = os.getenv("OLLAMA_MODEL_ID", "Qwen2.5-Coder-1.5B")
+DEFAULT_OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+DEFAULT_OLLAMA_MODEL_ID = os.getenv("OLLAMA_MODEL_ID", "hf.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q8_0")
 
 
 def get_bedrock_model(
@@ -72,7 +72,7 @@ def get_model(force_provider: Optional[str] = None):
     Priority:
     1. If `force_provider == 'bedrock'` or (`force_provider is None` and Bedrock credentials/profile are configured):
        Attempt BedrockModel (Nova Micro / Lite).
-    2. Fallback to OllamaModel (Qwen2.5-Coder-1.5B on local Ollama).
+    2. Fallback to OllamaModel (hf.co/Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF:Q8_0 on local Ollama).
     """
     provider = (force_provider or os.getenv("MODEL_PROVIDER", "")).strip().lower()
 
