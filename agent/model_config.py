@@ -65,6 +65,36 @@ def get_ollama_model(
         model_id=model_id,
     )
 
+def get_omniroute_model(
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    model_id: Optional[str] = None,
+):
+    """Instantiate a Strands OpenAIModel pointing at the Omniroute proxy
+    (OpenAI-compatible API), used as a more capable tool-calling provider
+    than the small local Ollama model.
+    """
+    from strands.models.openai import OpenAIModel
+
+    api_key = api_key or os.getenv("OMNIROUTE_API_KEY")
+    base_url = base_url or os.getenv("OMNIROUTE_BASE_URL")
+    model_id = model_id or os.getenv("OMNIROUTE_MODEL_ID", "gpt-4o")
+
+    if not api_key or not base_url:
+        raise ValueError("OMNIROUTE_API_KEY and OMNIROUTE_BASE_URL must be set")
+
+    return OpenAIModel(
+        client_args={
+            "api_key": api_key,
+            "base_url": base_url,
+        },
+        model_id=model_id,
+        params={
+            "max_tokens": 1000,
+            "temperature": 0.7,
+        },
+    )
+
 
 def get_model(force_provider: Optional[str] = None):
     """Resolve and return the appropriate Strands Model instance.
@@ -80,13 +110,23 @@ def get_model(force_provider: Optional[str] = None):
         os.getenv("BEDROCK_AWS_ACCESS_KEY_ID")
         or os.getenv("BEDROCK_PROFILE_NAME")
     )
+    has_omniroute_creds = bool(
+        os.getenv("OMNIROUTE_API_KEY") and os.getenv("OMNIROUTE_BASE_URL")
+    )
 
     if provider == "bedrock" or (not provider and has_bedrock_creds):
         try:
             logger.info("Initializing BedrockModel (%s in %s)...", DEFAULT_BEDROCK_MODEL_ID, DEFAULT_BEDROCK_REGION)
             return get_bedrock_model()
         except Exception as e:
-            logger.warning("Failed to initialize BedrockModel (%s), falling back to Ollama.", e)
+            logger.warning("Failed to initialize BedrockModel (%s), trying next provider.", e)
+
+    if provider == "omniroute" or (not provider and has_omniroute_creds):
+        try:
+            logger.info("Initializing OmniroteModel via OpenAI-compatible proxy...")
+            return get_omniroute_model()
+        except Exception as e:
+            logger.warning("Failed to initialize Omniroute Model (%s), trying next provider.", e)
 
     logger.info("Using OllamaModel (%s at %s)", DEFAULT_OLLAMA_MODEL_ID, DEFAULT_OLLAMA_HOST)
     return get_ollama_model()
