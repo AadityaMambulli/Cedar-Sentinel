@@ -43,7 +43,7 @@ whether to run the action) and the audit logger (to record the decision).
 {
   "decision": "Allow",
   "reason": "Matched policy: refund-under-100",
-  "policy_id": "base.cedar#1"
+  "policy_id": "base.cedar#refund-under-100"
 }
 ```
 
@@ -65,7 +65,8 @@ Returned by functions in `executor/actions.py` after an allowed action runs.
   "status": "success",
   "action": "IssueRefund",
   "order_id": "12345",
-  "amount": 49.99
+  "amount": 40,
+  "refunded_total": 40
 }
 ```
 
@@ -86,10 +87,12 @@ On error:
 
 ---
 
-## 4. Audit log entry (stored in OpenSearch)
+## 4. Audit log entry (stored in OpenSearch, and returned by the API)
 
 Written by `audit/logger.py`. This is what the frontend's log browser and
-live action feed read (via the backend API).
+live action feed read (via the backend API). This is also the exact shape
+returned by `POST /api/authorize` — the API returns the full audit entry
+that was just created, not just the raw decision from section 2.
 
 ```json
 {
@@ -97,12 +100,20 @@ live action feed read (via the backend API).
   "timestamp": "2026-09-17T10:15:30.000Z",
   "decision": "Allow",
   "reason": "Matched policy: refund-under-100",
-  "policy_id": "base.cedar#1",
+  "policy_id": "base.cedar#refund-under-100",
   "action_result": {
     "status": "success",
     "action": "IssueRefund",
     "order_id": "12345",
-    "amount": 49.99
+    "amount": 40,
+    "refunded_total": 40
+  },
+  "principal": "Agent::\"refund-bot\"",
+  "action": "Action::\"IssueRefund\"",
+  "resource": "Order::\"12345\"",
+  "context": {
+    "amount": 40,
+    "currency": "USD"
   }
 }
 ```
@@ -115,24 +126,36 @@ live action feed read (via the backend API).
 | `reason`        | string        | Same as section 2                            |
 | `policy_id`     | string \| null | Same as section 2                           |
 | `action_result` | object \| null | Section 3 output, or null if denied         |
+| `principal`     | string        | Same as section 1 — which agent made the request |
+| `action`        | string        | Same as section 1                            |
+| `resource`      | string        | Same as section 1                            |
+| `context`       | object        | Same as section 1                            |
 
 ---
 
 ## 5. Backend API (for frontend consumption)
 
-Rough shape the frontend should expect — finalize once the backend/executor
-API routes are built.
+Implemented in `api/`. All routes are unauthenticated for the demo — no
+API key or auth token required. CORS is open to all origins.
 
 - `GET /api/logs?agent=&decision=&limit=` → array of audit log entries (section 4)
 - `GET /api/logs/:id` → single audit log entry (section 4)
-- `POST /api/authorize` → runs sections 1–4 end-to-end, returns the audit log entry created
-- `GET /api/agents` → list of known agent principals
+- `POST /api/authorize` → runs sections 1–4 end-to-end, returns the full audit log entry created (section 4 shape)
+- `GET /api/agents` → list of known agent principals (hardcoded for the demo, e.g. `["refund-bot"]`)
 - `GET /api/policies` → list of loaded Cedar policies (raw `.cedar` text + metadata)
+
+Base URL for local development: `http://localhost:8000`
 
 ---
 
-## Open questions (fill in as decided)
+## Resolved decisions
 
-- [ ] Does the frontend call the executor directly, or only read from the audit log?
-- [ ] Auth on the API routes (none for demo, or basic API key)?
-- [ ] Polling interval for the live action feed, or is it websocket-based?
+- **Frontend calls the executor directly, or only reads from the audit log?**
+  Neither exactly — the frontend calls `POST /api/authorize`, which runs
+  the full pipeline (policy check, then executor if allowed, then audit
+  log write) in one call. The frontend never calls the executor directly,
+  and `GET /api/logs` is read-only for browsing history.
+- **Auth on the API routes?** None for the demo — open for local
+  development and the hackathon submission.
+- **Polling interval for the live action feed, or websocket-based?**
+  (Confirm with frontend implementation — update this line once decided.)
