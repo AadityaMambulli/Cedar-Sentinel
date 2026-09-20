@@ -9,9 +9,10 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Contact from './pages/Contact';
 import FAQ from './pages/FAQ';
+import Sage from './pages/Sage';
 import Error500 from './pages/Error500';
 
-const INFO_ROUTES = ['about', 'privacy', 'terms', 'contact', 'faq'];
+const INFO_ROUTES = ['about', 'privacy', 'terms', 'contact', 'faq', 'sage'];
 
 export default function App() {
   const [hash, setHash] = useState(window.location.hash);
@@ -52,6 +53,7 @@ export default function App() {
         {infoRoute === 'terms' && <Terms />}
         {infoRoute === 'contact' && <Contact />}
         {infoRoute === 'faq' && <FAQ />}
+        {infoRoute === 'sage' && <Sage />}
       </>
     );
   } else if (isError500) {
