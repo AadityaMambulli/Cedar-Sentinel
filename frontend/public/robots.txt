@@ -1,9 +1,0 @@
-# Cedar Sentinel - robots.txt
-# https://cedarsentinel.dev
-
-User-agent: *
-Allow: /
-Disallow: /app/
-Disallow: /api/
-
-Sitemap: https://cedarsentinel.dev/sitemap.xml
