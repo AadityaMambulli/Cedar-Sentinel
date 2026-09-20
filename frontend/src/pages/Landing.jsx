@@ -338,11 +338,11 @@ export default function Landing() {
       </header>
 
       <main id="main-content">
-        {/* Hero Section — light bg, centered text, video illustration with play button */}
+        {/* Hero Section — light bg, centered text, video illustration */}
         <section className="pi-hero">
           <div className="pi-hero-video">
             <video ref={heroVideoRef} autoPlay muted loop playsInline preload="auto">
-              <source src="https://media.marinafiles.com/pi/hero-new.webm" type="video/webm" />
+              <source src="/hero-video.webm" type="video/webm" />
             </video>
           </div>
           <div className="pi-hero-inner">
@@ -355,7 +355,7 @@ export default function Landing() {
             <div className="pi-hero-card">
               <div className="hero-card-video">
                 <video autoPlay muted loop playsInline preload="auto">
-                  <source src="https://media.marinafiles.com/pi/hero-new.webm" type="video/webm" />
+<source src="/hero-video.webm" type="video/webm" />
                 </video>
                 <span className="hero-card-duration">90s</span>
               </div>
@@ -373,7 +373,7 @@ export default function Landing() {
           <div className="pi-hero-card">
             <div className="hero-card-video">
               <video autoPlay muted loop playsInline preload="auto">
-                <source src="https://media.marinafiles.com/pi/hero-new.webm" type="video/webm" />
+                <source src="/hero-video.webm" type="video/webm" />
               </video>
               <span className="hero-card-duration">90s</span>
             </div>
@@ -388,7 +388,7 @@ export default function Landing() {
         {/* Mobile Hero Video — shown only on mobile */}
         <div className="pi-hero-video-mobile">
           <video autoPlay muted loop playsInline preload="auto">
-            <source src="https://media.marinafiles.com/pi/hero-new.webm" type="video/webm" />
+            <source src="/hero-video.webm" type="video/webm" />
           </video>
         </div>
 
